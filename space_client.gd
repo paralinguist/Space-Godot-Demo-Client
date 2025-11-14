@@ -1,79 +1,64 @@
 extends Node2D
 
-## The URL we will connect to.
-var websocket_url := "ws://localhost:9876"
-var api_version = "0.91"
-var client_type = "godot"
-var role = "weapons"
-var team = "techn"
-
 var socket := WebSocketPeer.new()
 
-var connected := false
-
-func log_message(message: String) -> void:
-	var time := "%s | " % Time.get_time_string_from_system()
-	print(time + message)
+#Change these variables as needed
+var server_ip := "127.0.0.1"
+var role := "weapons"
+var team := "tech"
 
 func _ready() -> void:
 	pass
 
 func _process(_delta: float) -> void:
-	socket.poll()
-
-	if socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
-		while socket.get_available_packet_count():
-			var server_message = socket.get_packet().get_string_from_ascii()
-			var server_response = JSON.new()
-			if server_response.parse(server_message) == OK:
-				var response = server_response.data
-				if response["type"] == "status":
-					log_message("Here is the ship status: ")
-					print(response["data"])
+	if str(SpaceApi.ship["available_power"]) != $Panel/TextAvailablePower.text:
+		$Panel/PilotPower.value = SpaceApi.ship["pilot_power"]
+		$Panel/SciencePower.value = SpaceApi.ship["science_power"]
+		$Panel/WeaponsPower.value = SpaceApi.ship["weapon_power"]
+		$Panel/TextAvailablePower.text = str(SpaceApi.ship["available_power"])
 
 func _exit_tree() -> void:
 	socket.close()
 
-func _on_button_pressed() -> void:
-	if socket.connect_to_url(websocket_url) != OK:
-		log_message("Unable to connect.")
-		set_process(false)
-	else:
-		var state = socket.get_ready_state()
-
-		while state == WebSocketPeer.STATE_CONNECTING:
-			state = socket.get_ready_state() 
-			socket.poll()
-		connected = true
-		#initial connection string - sub "lockpick" for selected role
-		var instruction = {"action":"join"}
-		send(instruction)
-		print("Connected!")
-
-func send(instruction: Dictionary):
-	#socket.put_packet(message.to_utf8_buffer())
-	instruction["role"] = role
-	instruction["team"] = team
-	instruction["version"] = api_version
-	socket.send_text(JSON.stringify(instruction))
-
-
+func _on_connect_pressed() -> void:
+	SpaceApi.server_connect(server_ip, role, team)
 
 func _on_up_button_pressed() -> void:
-	var instruction = {"action":"shield"}
-	send(instruction)
+	SpaceApi.add_shield()
 
-
+#Shoots five every time. I sure hope five is a weapon!
 func _on_down_button_button_down() -> void:
-	var instruction = {"action":"shoot", "weapon_id":"5"}
-	send(instruction)
-
+	SpaceApi.shoot(5)
 
 func _on_left_button_pressed() -> void:
-	var instruction = {"action":"move", "direction":"left"}
-	send(instruction)
-
+	SpaceApi.move("left")
 
 func _on_right_button_pressed() -> void:
-	var instruction = {"action":"move", "direction":"right"}
-	send(instruction)
+	SpaceApi.move("right")
+
+#The following two functions allow for power levels to be adjusted according
+#To the rules. These aren't elegant, but they work.
+func _on_pilot_power_value_changed(value: float) -> void:
+	if SpaceApi.ship["pilot_power"] < value and int($Panel/TextAvailablePower.text) >= 1:
+		SpaceApi.power("up", "pilot")
+	elif SpaceApi.ship["pilot_power"] > value:
+		SpaceApi.power("down", "pilot")
+	else:
+		$Panel/PilotPower.value = SpaceApi.ship["pilot_power"]
+
+func _on_science_power_value_changed(value: float) -> void:
+	if SpaceApi.ship["science_power"] < value and int($Panel/TextAvailablePower.text) >= 1:
+		SpaceApi.power("up", "science")
+	elif SpaceApi.ship["science_power"] > value:
+		SpaceApi.power("down", "science")
+	else:
+		$Panel/SciencePower.value = SpaceApi.ship["science_power"]
+
+
+func _on_weapons_power_value_changed(value: float) -> void:
+	if SpaceApi.ship["weapon_power"] < value and int($Panel/TextAvailablePower.text) >= 1:
+		SpaceApi.power("up", "weapons")
+	elif SpaceApi.ship["weapon_power"] > value:
+		SpaceApi.power("down", "weapons")
+	else:
+		$Panel/WeaponsPower.value = SpaceApi.ship["weapon_power"]
