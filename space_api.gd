@@ -4,7 +4,7 @@ var socket := WebSocketPeer.new()
 
 var host := "ws://localhost:9876"
 var port := "9876"
-var api_version = "0.91"
+var api_version = "0.93"
 var client_type = "godot"
 var role = "weapons"
 var team = "tech"
@@ -70,6 +70,11 @@ func server_connect(_host, _role, _team):
 #Adds a single shield
 func add_shield() -> void:
 	var instruction = {"action":"shield"}
+	send_instruction(instruction)
+
+#Consumes a single shield
+func consume_shield() -> void:
+	var instruction = {"action":"consume"}
 	send_instruction(instruction)
 
 #Shoots selected module target weapon
