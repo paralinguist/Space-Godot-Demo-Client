@@ -96,6 +96,21 @@ offset_top = 287.0
 offset_right = 724.0
 offset_bottom = 316.0
 
+[node name="ChkMissiles" type="CheckButton" parent="Panel"]
+layout_mode = 0
+offset_left = 119.0
+offset_top = 210.0
+offset_right = 163.0
+offset_bottom = 234.0
+
+[node name="Label" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 166.0
+offset_top = 212.0
+offset_right = 206.0
+offset_bottom = 235.0
+text = "Fire missile"
+
 [connection signal="pressed" from="Panel/ShieldButton" to="." method="_on_up_button_pressed"]
 [connection signal="button_down" from="Panel/ShootButton" to="." method="_on_down_button_button_down"]
 [connection signal="pressed" from="Panel/LeftButton" to="." method="_on_left_button_pressed"]

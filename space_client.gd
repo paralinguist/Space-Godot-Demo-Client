@@ -28,7 +28,10 @@ func _on_up_button_pressed() -> void:
 
 #Shoots five every time. I sure hope five is a weapon!
 func _on_down_button_button_down() -> void:
-	SpaceApi.shoot(5)
+	if $Panel/ChkMissiles.button_pressed:
+		SpaceApi.shoot("missile")
+	else:
+		SpaceApi.shoot("laser")
 
 func _on_left_button_pressed() -> void:
 	SpaceApi.move("left")

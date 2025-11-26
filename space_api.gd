@@ -78,7 +78,7 @@ func consume_shield() -> void:
 	send_instruction(instruction)
 
 #Shoots selected module target weapon
-func shoot(target : int) -> void:
+func shoot(target : String) -> void:
 	var instruction = {"action":"shoot", "weapon_id":target}
 	send_instruction(instruction)
 
@@ -90,6 +90,22 @@ func move(direction : String) -> void:
 #Moves power up or down for a target module. Enforced by server.
 func power(direction, target):
 	var instruction = {"action":"power", "direction":direction, "target":target}
+	send_instruction(instruction)
+
+func overcharge():
+	var instruction = {"action":"overcharge"}
+	send_instruction(instruction)
+
+func craft():
+	var instruction  = {"action":"craft"}
+	send_instruction(instruction)
+
+func emp():
+	var instruction = {"action":"emp"}
+	send_instruction(instruction)
+
+func precognition():
+	var instruction = {"action":"precognition"}
 	send_instruction(instruction)
 
 func send_instruction(instruction: Dictionary):
