@@ -96,6 +96,11 @@ func overcharge():
 	var instruction = {"action":"overcharge"}
 	send_instruction(instruction)
 
+#Not applicable to the science module
+func special():
+	var instruction = {"action": "special"}
+	send_instruction(instruction)
+
 func craft():
 	var instruction  = {"action":"craft"}
 	send_instruction(instruction)
